@@ -1,0 +1,3 @@
+username = 'authproject'
+password = 'MDU2sxjkLSfjbrPp'
+auth_uri = 'mongodb+srv://<username>:<password>@auth-project.sobwp.mongodb.net/?retryWrites=true&w=majority'
