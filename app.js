@@ -3,6 +3,9 @@ const app = express();
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 const User = require("./model/User");
+const jwt = require("jsonwebtoken");
+const auth = require("./auth");
+
 // Connect to MongoDB
 const dbConnect = require("./db/dbConnect");
 dbConnect();
@@ -16,7 +19,7 @@ app.get("/", (request, response, next) => {
 });
 
 // Create a signup endpoint
-// register endpoint
+// Signup endpoint
 app.post("/signup", (req, res) => {
   // hash the password
   bcrypt
@@ -56,5 +59,67 @@ app.post("/signup", (req, res) => {
       });
     });
 });
+
+// Login endpoint with phone number and password
+app.post("/login", (request, response) => {
+  // check if phone exists
+  User.findOne({ phone: request.body.phone })
+
+    // if phone exists
+    .then((user) => {
+      // compare the password entered and the hashed password found
+      bcrypt
+        .compare(request.body.password, user.password)
+
+        // if the passwords match
+        .then((phoneCheck) => {
+
+          // check if password matches
+          if(!phoneCheck) {
+            return response.status(400).send({
+              message: "Passwords does not match",
+              error,
+            });
+          }
+
+          //   create JWT token
+          const token = jwt.sign(
+            {
+              userId: user._id,
+              userPhone: user.phone,
+            },
+            "RANDOM-TOKEN",
+            { expiresIn: "24h" }
+          );
+
+          //   return success response
+          response.status(200).send({
+            message: "Login Successful",
+            phone: user.phone,
+            token,
+          });
+        })
+        // catch error if password does not match
+        .catch((error) => {
+          response.status(400).send({
+            message: "Passwords does not match",
+            error,
+          });
+        });
+    })
+    // catch error if phone does not exist
+    .catch((e) => {
+      response.status(404).send({
+        message: "Phone number not found",
+        e,
+      });
+    });
+});
+
+// Authentication endpoint
+app.get("/auth-endpoint", auth, (req, res) => {
+  res.json({ message: "You are authorized to access me" });
+});
+
 
 module.exports = app;
