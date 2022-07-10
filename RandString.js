@@ -1,13 +1,11 @@
 const RandString = () => {
-    const len = 8;
-    let randStr = '';
-
-    for(let i=0; i<len; i++) {
-        const ch = Math.floor((Math.random()*10)+1)
-        randStr += ch
-    }
-
-    return randStr;
-}
+  const characters =
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let token = "";
+  for (let i = 0; i < 25; i++) {
+    token += characters[Math.floor(Math.random() * characters.length)];
+  }
+  return token;
+};
 
 exports.module = RandString;

@@ -4,6 +4,8 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 const User = require("./model/User");
 const jwt = require("jsonwebtoken");
+const RandString = require("./RandString");
+const SendEmail = require("./SendMail");
 
 // Connect to MongoDB
 const dbConnect = require("./db/dbConnect");
@@ -31,6 +33,7 @@ app.get("/", (request, response, next) => {
 });
 // Signup endpoint
 app.post("/signup", (req, res) => {
+  const randString = RandString();
   // hash the password
   bcrypt
     .hash(req.body.password, 10)
@@ -41,6 +44,8 @@ app.post("/signup", (req, res) => {
         email: req.body.email,
         password: hashedPassword,
         phone: req.body.phone,
+        isValid: false,
+        uniqueString: randString,
       });
       
       // save the new user
@@ -60,6 +65,9 @@ app.post("/signup", (req, res) => {
             error,
           });
         });
+
+      SendEmail(user.email);
+      res.redirect('back');
     })
     // catch error if the password hash isn't successful
     .catch((e) => {
@@ -68,6 +76,18 @@ app.post("/signup", (req, res) => {
         e,
       });
     });
+});
+// Verify email
+app.get('/verify/:uniqueString', async (req, res) => {
+  const { uniqueString } = req.params;
+  const user = await User.findOne({ uniqueString: uniqueString });
+  if(user) {
+    user.isValid  = true;
+    user.save();
+    res.redirect('/')
+  } else {
+    res.json('User not found!')
+  }
 });
 // Login endpoint with phone number and password
 app.post("/login", (request, response) => {
