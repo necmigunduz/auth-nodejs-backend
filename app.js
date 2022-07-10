@@ -104,6 +104,7 @@ app.post("/login", (request, response) => {
           //   return success response
           response.status(200).send({
             message: "Login is successful!",
+            status: user.status,
             phone: user.phone,
             token,
           });
