@@ -4,7 +4,6 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 const User = require("./model/User");
 const jwt = require("jsonwebtoken");
-const auth = require("./auth");
 
 // Connect to MongoDB
 const dbConnect = require("./db/dbConnect");
@@ -50,7 +49,7 @@ app.post("/signup", (req, res) => {
         // return success if the new user is added to the database successfully
         .then((result) => {
           res.status(201).send({
-            message: "User Created Successfully",
+            message: "Signup is completed successfully!",
             result,
           });
         })
@@ -104,7 +103,7 @@ app.post("/login", (request, response) => {
 
           //   return success response
           response.status(200).send({
-            message: "Login Successful",
+            message: "Login is successful!",
             phone: user.phone,
             token,
           });
@@ -124,10 +123,6 @@ app.post("/login", (request, response) => {
         e,
       });
     });
-});
-// Authentication endpoint
-app.get("/auth-endpoint", auth, (req, res) => {
-  res.json({ message: "You are authorized to access me" });
 });
 // Export
 module.exports = app;
