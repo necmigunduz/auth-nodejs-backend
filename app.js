@@ -4,11 +4,13 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 const User = require("./model/User");
 const jwt = require("jsonwebtoken");
+const RandString = require("./RandString");
+const SendMail = require("./SendMail");
 
 // Connect to MongoDB
 const dbConnect = require("./db/dbConnect");
 dbConnect();
-// Handle Cores Error by adding a header here
+// Handle Cors Error by adding a header here
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
@@ -31,6 +33,10 @@ app.get("/", (request, response, next) => {
 });
 // Signup endpoint
 app.post("/signup", (req, res) => {
+  const { email } = req.body;
+  const uniqueString = RandString();
+  const isValid = false;
+
   // hash the password
   bcrypt
     .hash(req.body.password, 10)
@@ -41,8 +47,10 @@ app.post("/signup", (req, res) => {
         email: req.body.email,
         password: hashedPassword,
         phone: req.body.phone,
+        isValid: req.body.isValid,
+        uniqueString: req.body.uniqueString,
       });
-
+      
       // save the new user
       user
         .save()
