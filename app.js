@@ -31,7 +31,6 @@ app.get("/", (request, response, next) => {
 });
 // Signup endpoint
 app.post("/signup", (req, res) => {
-  const token = jwt.sign({phone: req.body.phone}, env.process.password)
   // hash the password
   bcrypt
     .hash(req.body.password, 10)
@@ -42,7 +41,6 @@ app.post("/signup", (req, res) => {
         email: req.body.email,
         password: hashedPassword,
         phone: req.body.phone,
-        confirmationCode: token
       });
 
       // save the new user
