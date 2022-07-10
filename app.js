@@ -4,8 +4,6 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 const User = require("./model/User");
 const jwt = require("jsonwebtoken");
-const RandString = require("./RandString");
-const SendMail = require("./SendMail");
 
 // Connect to MongoDB
 const dbConnect = require("./db/dbConnect");
@@ -33,10 +31,6 @@ app.get("/", (request, response, next) => {
 });
 // Signup endpoint
 app.post("/signup", (req, res) => {
-  const { email } = req.body;
-  const uniqueString = RandString();
-  const isValid = false;
-
   // hash the password
   bcrypt
     .hash(req.body.password, 10)
@@ -47,8 +41,6 @@ app.post("/signup", (req, res) => {
         email: req.body.email,
         password: hashedPassword,
         phone: req.body.phone,
-        isValid: req.body.isValid,
-        uniqueString: req.body.uniqueString,
       });
       
       // save the new user
