@@ -30,8 +30,6 @@ app.get("/", (request, response, next) => {
   response.json({ message: `Server is running on Port ${port} ` });
   next();
 });
-
-// Create a signup endpoint
 // Signup endpoint
 app.post("/signup", (req, res) => {
   // hash the password
@@ -72,7 +70,6 @@ app.post("/signup", (req, res) => {
       });
     });
 });
-
 // Login endpoint with phone number and password
 app.post("/login", (request, response) => {
   // check if phone exists
@@ -128,11 +125,9 @@ app.post("/login", (request, response) => {
       });
     });
 });
-
 // Authentication endpoint
 app.get("/auth-endpoint", auth, (req, res) => {
   res.json({ message: "You are authorized to access me" });
 });
-
-
+// Export
 module.exports = app;
