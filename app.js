@@ -4,8 +4,6 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 const User = require("./model/User");
 const jwt = require("jsonwebtoken");
-const RandString = require("./RandString");
-const SendEmail = require("./SendMail");
 
 // Connect to MongoDB
 const dbConnect = require("./db/dbConnect");
@@ -26,14 +24,13 @@ app.use((req, res, next) => {
 // body parser configuration
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-let port = 3000;
+let port = 8080;
 app.get("/", (request, response, next) => {
   response.json({ message: `Server is running on Port ${port} ` });
   next();
 });
 // Signup endpoint
 app.post("/signup", (req, res) => {
-  const randString = RandString();
   // hash the password
   bcrypt
     .hash(req.body.password, 10)
@@ -42,19 +39,17 @@ app.post("/signup", (req, res) => {
       const user = new User({
         username: req.body.username,
         email: req.body.email,
-        password: hashedPassword,
         phone: req.body.phone,
-        isValid: false,
-        uniqueString: randString,
+        password: hashedPassword,
       });
-      
+
       // save the new user
       user
         .save()
         // return success if the new user is added to the database successfully
         .then((result) => {
           res.status(201).send({
-            message: "Signup is completed successfully!",
+            message: "User Created Successfully",
             result,
           });
         })
@@ -65,9 +60,6 @@ app.post("/signup", (req, res) => {
             error,
           });
         });
-
-      SendEmail(user.email);
-      res.redirect('back');
     })
     // catch error if the password hash isn't successful
     .catch((e) => {
@@ -77,18 +69,7 @@ app.post("/signup", (req, res) => {
       });
     });
 });
-// Verify email
-app.get('/verify/:uniqueString', async (req, res) => {
-  const { uniqueString } = req.params;
-  const user = await User.findOne({ uniqueString: uniqueString });
-  if(user) {
-    user.isValid  = true;
-    user.save();
-    res.redirect('/')
-  } else {
-    res.json('User not found!')
-  }
-});
+
 // Login endpoint with phone number and password
 app.post("/login", (request, response) => {
   // check if phone exists
