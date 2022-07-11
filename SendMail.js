@@ -4,8 +4,8 @@ const SendMail = (email, uniqueString) => {
     var Transport = nodemailer.createTransport({
         service: "Gmail",
         auth: {
-            user: "necmigunduz@gmail.com",
-            pass: process.env.gmail_password,
+            user: process.env.GOOGLE_CLIENT_ID,
+            pass: process.env.GOOGLE_CLIENT_SECRET,
         }
     });
 
