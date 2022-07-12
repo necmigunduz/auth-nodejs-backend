@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 const User = require("./model/User");
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 // Connect to MongoDB
 const dbConnect = require("./db/dbConnect");
@@ -31,7 +32,9 @@ app.get("/", (request, response, next) => {
 });
 // Signup endpoint
 app.post("/signup", (req, res) => {
-  // hash the password
+  // Create token
+  const token = jwt.sign({email: req.body.email}, process.env.JWT_SECRET);
+  // Create user
   bcrypt
     .hash(req.body.password, 10)
     .then((hashedPassword) => {
@@ -41,6 +44,7 @@ app.post("/signup", (req, res) => {
         email: req.body.email,
         phone: req.body.phone,
         password: hashedPassword,
+        confirmationCode: token,
       });
 
       // save the new user
@@ -83,15 +87,13 @@ app.post("/login", (request, response) => {
 
         // if the passwords match
         .then((phoneCheck) => {
-
           // check if password matches
-          if(!phoneCheck) {
+          if (!phoneCheck) {
             return response.status(400).send({
               message: "Passwords does not match",
               error,
             });
           }
-
           //   create JWT token
           const token = jwt.sign(
             {

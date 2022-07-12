@@ -16,11 +16,13 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please enter a phone number"],
   },
-  isValid: {
-    type: Boolean,
+  confirmationCode: {
+    type: String
   },
-  uniqueString: {
-    type: String,
+  status: {
+    type: String, 
+    enum: ['Pending', 'Active'],
+    default: 'Pending'
   }
 });
 
